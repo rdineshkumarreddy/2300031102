@@ -9,7 +9,6 @@ if (!fs.existsSync(LOG_DIR)) {
   fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
-// Predefined valid sets
 const VALID_STACKS = new Set(['backend', 'frontend']);
 const VALID_LEVELS = new Set(['debug', 'info', 'warn', 'error', 'fatal']);
 const VALID_BACKEND_PACKAGES = new Set([
@@ -34,9 +33,7 @@ function validateLogParams(stack, level, pkg) {
   return false;
 }
 
-// Required Function: Log(stack, level, package, message)
 function Log(stack, level, pkg, message) {
-  // Normalize parameters to avoid type errors
   let normStack = (typeof stack === 'string' ? stack : 'backend').toLowerCase();
   let normLevel = (typeof level === 'string' ? level : 'info').toLowerCase();
   let normPkg = (typeof pkg === 'string' ? pkg : 'utils').toLowerCase();
@@ -52,7 +49,6 @@ function Log(stack, level, pkg, message) {
     }
   }
 
-  // If parameters are invalid, fall back to valid values to prevent Log API rejection (400)
   if (!validateLogParams(normStack, normLevel, normPkg)) {
     process.stderr.write(`[WARNING] Invalid log params: stack=${stack}, level=${level}, package=${pkg}. Normalizing to fallback values.\n`);
     normStack = 'backend';
@@ -63,21 +59,18 @@ function Log(stack, level, pkg, message) {
   const timestamp = new Date().toISOString();
   const formatted = `[${timestamp}] [${normLevel.toUpperCase()}] [${normStack}/${normPkg}] ${msgStr}\n`;
 
-  // Write to stdout or stderr depending on level
   if (normLevel === 'error' || normLevel === 'fatal') {
     process.stderr.write(formatted);
   } else {
     process.stdout.write(formatted);
   }
 
-  // Append to local log file
   try {
     fs.appendFileSync(LOG_FILE, formatted);
   } catch (err) {
     process.stderr.write(`Failed to write to local log file: ${err.message}\n`);
   }
 
-  // Send log to remote API
   if (process.env.SEND_LOGS_TO_SERVER === 'true') {
     const logsUrl = process.env.LOG_SERVER_URL || 'http://4.224.186.213/evaluation-service/logs';
     const token = process.env.ACCESS_TOKEN;
@@ -94,13 +87,11 @@ function Log(stack, level, pkg, message) {
         'Authorization': token ? `Bearer ${token}` : ''
       }
     }).catch(err => {
-      // Fail silently to prevent crashing the main application thread
       process.stderr.write(`Failed to send log to remote API: ${err.message}\n`);
     });
   }
 }
 
-// Express Request logging middleware
 const loggingMiddleware = (req, res, next) => {
   const start = Date.now();
   const { method, originalUrl, ip } = req;
@@ -110,7 +101,6 @@ const loggingMiddleware = (req, res, next) => {
     const statusCode = res.statusCode;
     const message = `HTTP Request: ${method} ${originalUrl} - Status: ${statusCode} - Time: ${duration}ms - IP: ${ip}`;
     
-    // Uses mandatory Log function with valid backend/middleware parameters
     Log('backend', 'info', 'middleware', message);
   });
 
