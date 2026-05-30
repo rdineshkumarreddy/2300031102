@@ -21,7 +21,7 @@ async function generateSchedule() {
   logger.info(`Processing schedule for ${depotsRaw.length} depots using ${tasksRaw.length} tasks.`);
 
   const depotSchedules = depotsRaw.map(depot => {
-    const depotId = depot.DepotID !== undefined ? depot.DepotID : (depot.depotId !== undefined ? depot.depotId : (depot.id !== undefined ? depot.id : 'UNKNOWN'));
+    const depotId = depot.ID !== undefined ? depot.ID : (depot.DepotID !== undefined ? depot.DepotID : (depot.depotId !== undefined ? depot.depotId : (depot.id !== undefined ? depot.id : 'UNKNOWN')));
     const mechanicHours = depot.MechanicHours !== undefined ? Number(depot.MechanicHours) : (depot.mechanicHours !== undefined ? Number(depot.mechanicHours) : 0);
 
     const result = solveKnapsack(mechanicHours, tasksRaw);

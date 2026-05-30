@@ -25,8 +25,15 @@ async function getTasks() {
         'Authorization': token ? `Bearer ${token}` : ''
       }
     });
+    
+    const data = response.data;
+    const tasksArray = Array.isArray(data) ? data : (data && Array.isArray(data.vehicles) ? data.vehicles : (data && Array.isArray(data.tasks) ? data.tasks : null));
+    if (!tasksArray) {
+      throw new Error('API response does not contain a valid tasks array');
+    }
+
     logger.info(`Successfully fetched tasks from API.`);
-    return response.data;
+    return tasksArray;
   } catch (error) {
     logger.warn(`Failed to fetch tasks from API (${error.message}). Falling back to mock tasks data.`);
     return MOCK_TASKS;

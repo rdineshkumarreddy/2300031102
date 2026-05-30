@@ -24,8 +24,15 @@ async function getDepots() {
         'Authorization': token ? `Bearer ${token}` : ''
       }
     });
+    
+    const data = response.data;
+    const depotsArray = Array.isArray(data) ? data : (data && Array.isArray(data.depots) ? data.depots : null);
+    if (!depotsArray) {
+      throw new Error('API response does not contain a valid depots array');
+    }
+    
     logger.info(`Successfully fetched depots from API.`);
-    return response.data;
+    return depotsArray;
   } catch (error) {
     logger.warn(`Failed to fetch depots from API (${error.message}). Falling back to mock depots data.`);
     return MOCK_DEPOTS;

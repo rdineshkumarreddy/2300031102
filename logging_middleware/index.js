@@ -36,10 +36,21 @@ function validateLogParams(stack, level, pkg) {
 
 // Required Function: Log(stack, level, package, message)
 function Log(stack, level, pkg, message) {
-  // Normalize parameters
-  let normStack = (stack || 'backend').toLowerCase();
-  let normLevel = (level || 'info').toLowerCase();
-  let normPkg = (pkg || 'utils').toLowerCase();
+  // Normalize parameters to avoid type errors
+  let normStack = (typeof stack === 'string' ? stack : 'backend').toLowerCase();
+  let normLevel = (typeof level === 'string' ? level : 'info').toLowerCase();
+  let normPkg = (typeof pkg === 'string' ? pkg : 'utils').toLowerCase();
+
+  let msgStr = '';
+  if (typeof message === 'string') {
+    msgStr = message;
+  } else if (message !== undefined && message !== null) {
+    try {
+      msgStr = JSON.stringify(message);
+    } catch (e) {
+      msgStr = String(message);
+    }
+  }
 
   // If parameters are invalid, fall back to valid values to prevent Log API rejection (400)
   if (!validateLogParams(normStack, normLevel, normPkg)) {
@@ -50,7 +61,7 @@ function Log(stack, level, pkg, message) {
   }
 
   const timestamp = new Date().toISOString();
-  const formatted = `[${timestamp}] [${normLevel.toUpperCase()}] [${normStack}/${normPkg}] ${message}\n`;
+  const formatted = `[${timestamp}] [${normLevel.toUpperCase()}] [${normStack}/${normPkg}] ${msgStr}\n`;
 
   // Write to stdout or stderr depending on level
   if (normLevel === 'error' || normLevel === 'fatal') {
@@ -75,7 +86,7 @@ function Log(stack, level, pkg, message) {
       stack: normStack,
       level: normLevel,
       package: normPkg,
-      message: message
+      message: msgStr
     }, {
       timeout: 3000,
       headers: {
