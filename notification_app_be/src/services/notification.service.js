@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { logger } = require('../../../logging_middleware');
+const logger = require('../utils/logger');
 
 const MOCK_NOTIFICATIONS = {
   "notifications": [

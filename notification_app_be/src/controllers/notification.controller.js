@@ -1,5 +1,5 @@
 const { getRawNotifications } = require('../services/notification.service');
-const { logger } = require('../../../logging_middleware');
+const logger = require('../utils/logger');
 
 const TYPE_WEIGHTS = {
   placement: 3,

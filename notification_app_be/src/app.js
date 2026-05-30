@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 
 // Centralized Error Handler
 app.use((err, req, res, next) => {
-  const { logger } = require('../../logging_middleware');
+  const logger = require('./utils/logger');
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   

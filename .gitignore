@@ -1,9 +1,9 @@
 node_modules/
 logs/
 .env
-vehicle_maintence_scheduler/node_modules/
-vehicle_maintence_scheduler/logs/
-vehicle_maintence_scheduler/.env
+vehicle_maintenance_scheduler/node_modules/
+vehicle_maintenance_scheduler/logs/
+vehicle_maintenance_scheduler/.env
 notification_app_be/node_modules/
 notification_app_be/logs/
 notification_app_be/.env
