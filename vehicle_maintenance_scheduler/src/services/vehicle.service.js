@@ -1,5 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
+const authService = require('./auth.service');
 
 const MOCK_TASKS = [
   { "TaskID": "TASK-01", "Duration": 2, "Impact": 10 },
@@ -11,16 +12,17 @@ const MOCK_TASKS = [
 ];
 
 async function getTasks() {
-  const url = process.env.VEHICLES_API_URL || 'http://20.244.56.144/evaluation-service/vehicles';
+  const url = process.env.VEHICLES_API_URL || 'http://4.224.186.213/evaluation-service/vehicles';
   const timeout = parseInt(process.env.API_TIMEOUT || '5000', 10);
 
   logger.info(`Fetching tasks from API: ${url}`);
 
   try {
+    const token = await authService.getAccessToken();
     const response = await axios.get(url, {
       timeout,
       headers: {
-        'Authorization': `Bearer ${process.env.ACCESS_TOKEN || ''}`
+        'Authorization': token ? `Bearer ${token}` : ''
       }
     });
     logger.info(`Successfully fetched tasks from API.`);

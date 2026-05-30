@@ -1,5 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
+const authService = require('./auth.service');
 
 const MOCK_NOTIFICATIONS = {
   "notifications": [
@@ -85,10 +86,11 @@ async function getRawNotifications() {
   logger.info(`Fetching notifications from API: ${url}`);
 
   try {
+    const token = await authService.getAccessToken();
     const response = await axios.get(url, {
       timeout,
       headers: {
-        'Authorization': `Bearer ${process.env.ACCESS_TOKEN || ''}`
+        'Authorization': token ? `Bearer ${token}` : ''
       }
     });
     logger.info(`Successfully fetched notifications from external API.`);

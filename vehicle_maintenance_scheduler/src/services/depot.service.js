@@ -1,5 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
+const authService = require('./auth.service');
 
 // Fallback Mock Depots data
 const MOCK_DEPOTS = [
@@ -10,16 +11,17 @@ const MOCK_DEPOTS = [
 ];
 
 async function getDepots() {
-  const url = process.env.DEPOTS_API_URL || 'http://20.244.56.144/evaluation-service/depots';
+  const url = process.env.DEPOTS_API_URL || 'http://4.224.186.213/evaluation-service/depots';
   const timeout = parseInt(process.env.API_TIMEOUT || '5000', 10);
   
   logger.info(`Fetching depots from API: ${url}`);
   
   try {
+    const token = await authService.getAccessToken();
     const response = await axios.get(url, { 
       timeout,
       headers: {
-        'Authorization': `Bearer ${process.env.ACCESS_TOKEN || ''}`
+        'Authorization': token ? `Bearer ${token}` : ''
       }
     });
     logger.info(`Successfully fetched depots from API.`);
